@@ -1,19 +1,34 @@
-use log::error;
-use std::{fs::read_to_string, path::Path};
+use log::{debug, error};
+use std::fs::File;
+use std::io::{BufReader, Read};
+use std::path::Path;
 
 #[derive(Debug)]
 pub enum MarseError {
-    FileDoesNotExist,
+    FileError,
 }
 
 pub fn file_to_html(path: &Path) -> Result<String, MarseError> {
-    let markdown = match read_to_string(path) {
+    debug!("Loading {path:#?}");
+
+    let file = match File::open(path) {
         Ok(v) => v,
         Err(e) => {
             error!("{e}");
-            return Err(MarseError::FileDoesNotExist);
+            return Err(MarseError::FileError);
         }
     };
 
-    Ok(markdown)
+    let mut reader = BufReader::new(file);
+    let mut file_contents = String::new();
+
+    match reader.read_to_string(&mut file_contents) {
+        Ok(v) => v,
+        Err(e) => {
+            error!("{e}");
+            return Err(MarseError::FileError);
+        }
+    };
+
+    Ok(file_contents)
 }
