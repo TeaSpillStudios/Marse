@@ -1,6 +1,7 @@
 use log::error;
 use std::{fs::read_to_string, path::Path};
 
+#[derive(Debug)]
 pub enum MarseError {
     FileDoesNotExist,
 }
