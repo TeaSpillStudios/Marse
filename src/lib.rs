@@ -1,14 +1,18 @@
-pub fn add(left: usize, right: usize) -> usize {
-    left + right
+use log::error;
+use std::{fs::read_to_string, path::Path};
+
+pub enum MarseError {
+    FileDoesNotExist,
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
+pub fn file_to_html(path: &Path) -> Result<String, MarseError> {
+    let markdown = match read_to_string(path) {
+        Ok(v) => v,
+        Err(e) => {
+            error!("{e}");
+            return Err(MarseError::FileDoesNotExist);
+        }
+    };
 
-    #[test]
-    fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
-    }
+    Ok(markdown)
 }
